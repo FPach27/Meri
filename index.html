@@ -112,7 +112,7 @@
       pointer-events: none;
     }
 
-    /* Carta dedicatoria ajustada para caber */
+    /* Carta dedicatoria ajustada para caber y hacer scroll */
     #letter {
       position: absolute;
       top: 50%;
@@ -125,7 +125,7 @@
       display: none;
       width: 80%;
       max-width: 600px;
-      max-height: 75vh;
+      height: 80vh;
       overflow-y: auto;
       text-align: left;
       line-height: 1.5;
@@ -134,16 +134,10 @@
   </style>
 </head>
 <body>
-  <!-- Música de fondo (coloca locos.mp3 en el mismo directorio) -->
   <audio id="bgm" src="locos.mp3" loop preload="auto"></audio>
-
-  <!-- Mensaje de instrucción -->
   <div id="instruction">Atrapa 20 corazones para una sorpresa!</div>
-  <!-- Contador de corazones -->
   <div id="counter">0/20</div>
-  <!-- Contenedor para los corazones -->
   <div id="heart-container"></div>
-  <!-- Contenedor final con carta y espacio para flores -->
   <div id="final-container">
     <div id="letter">
       <h2>Para ti, mi amor</h2>
@@ -171,16 +165,11 @@
       </p>
     </div>
   </div>
-
   <script>
-    // Intentar reproducir música al cargar
     window.addEventListener('load', () => {
       const bgm = document.getElementById('bgm');
-      bgm.play().catch(() => {
-        console.log('La reproducción automática fue bloqueada.');
-      });
+      bgm.play().catch(() => console.log('Autoplay bloqueado'));
     });
-
     let phrases = [
       "Eres la casualidad más bonita que me pasó en la vida",
       "Aunque estés lejos, te siento más cerca que nunca",
@@ -202,12 +191,9 @@
       "Mi mejor decisión siempre va a ser elegirte a ti",
       "Te pienso y automáticamente sonrío",
       "Tú haces que todo valga la pena"
-      // agregar hasta 20 frases
     ];
-
     const heartEmojis = ['❤️','💜','🩵','💛','💚'];
     const flowerEmojis = ['🌸','🌺','🌻','🌷','🌼'];
-
     let clickedCount = 0;
     const maxClicks = 20;
     const heartContainer = document.getElementById('heart-container');
@@ -215,63 +201,44 @@
     const finalContainer = document.getElementById('final-container');
     const letter = document.getElementById('letter');
     let gameOver = false;
-
-    let heartInterval;
-    let flowerInterval;
-
+    let heartInterval, flowerInterval;
     function showMessage(text, x, y) {
       const msg = document.createElement('div');
       msg.classList.add('message');
       msg.textContent = text;
-      msg.style.left = x + 'px';
-      msg.style.top = y + 'px';
+      msg.style.left = x + 'px'; msg.style.top = y + 'px';
       document.body.appendChild(msg);
       msg.addEventListener('animationend', () => msg.remove());
     }
-
     function createFloat(emoji, container) {
-      const el = document.createElement('div');
-      el.classList.add('float');
-      el.textContent = emoji;
-      const size = Math.random() * 20 + 40;
-      el.style.fontSize = size + 'px';
-      el.style.left = Math.random() * 100 + 'vw';
-      container.appendChild(el);
-      return el;
+      const el = document.createElement('div'); el.classList.add('float'); el.textContent = emoji;
+      const size = Math.random()*20+40; el.style.fontSize = size+'px'; el.style.left=Math.random()*100+'vw';
+      container.appendChild(el); return el;
     }
-
     function createHeart() {
-      if (gameOver) return;
+      if(gameOver) return;
       const emoji = heartEmojis[Math.floor(Math.random()*heartEmojis.length)];
-      const heart = createFloat(emoji, heartContainer);
-      heart.classList.add('heart');
-      heart.addEventListener('click', (e) => {
-        if (gameOver || heart.classList.contains('pop')) return;
+      const heart = createFloat(emoji, heartContainer); heart.classList.add('heart');
+      heart.addEventListener('click',(e)=>{
+        if(gameOver||heart.classList.contains('pop'))return;
         heart.classList.add('pop');
-        const idx = Math.floor(Math.random()*phrases.length);
-        const phrase = phrases.splice(idx,1)[0];
-        showMessage(phrase, e.clientX, e.clientY);
-        clickedCount++;
-        counterEl.textContent = `${clickedCount}/${maxClicks}`;
-        setTimeout(() => heart.remove(), 500);
-        if (clickedCount >= maxClicks) showFinal();
+        const phrase=phrases.splice(Math.floor(Math.random()*phrases.length),1)[0];
+        showMessage(phrase,e.clientX,e.clientY);
+        clickedCount++; counterEl.textContent=`${clickedCount}/${maxClicks}`;
+        setTimeout(()=>heart.remove(),500);
+        if(clickedCount>=maxClicks)showFinal();
       });
-      setTimeout(() => heart.remove(), 6000);
+      setTimeout(()=>heart.remove(),6000);
     }
-
-    function showFinal() {
-      gameOver = true;
-      clearInterval(heartInterval);
-      finalContainer.style.height = '50%';
-      letter.style.display = 'block';
-      flowerInterval = setInterval(() => {
-        const emoji = flowerEmojis[Math.floor(Math.random()*flowerEmojis.length)];
-        const fl = createFloat(emoji, document.body);
-        setTimeout(() => fl.remove(), 8000);
-      }, 400);
+    function showFinal(){
+      gameOver=true; clearInterval(heartInterval);
+      finalContainer.style.height='100vh'; letter.style.display='block';
+      flowerInterval=setInterval(()=>{
+        const fl=createFloat(flowerEmojis[Math.floor(Math.random()*flowerEmojis.length)],document.body);
+        setTimeout(()=>fl.remove(),8000);
+      },400);
     }
-
-    heartInterval = setInterval(createHeart, 800);
+    heartInterval=setInterval(createHeart,800);
   </script>
 </body>
 </html>
