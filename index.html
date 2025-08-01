@@ -109,10 +109,11 @@
       height: 0;
       overflow: visible;
       transition: height 2s ease;
-      pointer-events: none;
+      /* habilitar interacción para scroll */
+      pointer-events: auto;
     }
 
-    /* Carta dedicatoria ajustada para caber y hacer scroll */
+    /* Carta dedicatoria ajustada con scroll y fuente más pequeña */
     #letter {
       position: absolute;
       top: 40%;
@@ -128,9 +129,11 @@
       height: 75vh;
       overflow-y: auto;
       text-align: left;
-      line-height: 1.5;
-      font-size: 15px;
+      line-height: 1.4;
+      font-size: 14px;
       z-index: 11;
+      /* permitir scroll */
+      pointer-events: auto;
     }
   </style>
 </head>
@@ -162,7 +165,7 @@
         Y por recordarme, incluso a la distancia, lo hermoso que es amar sin límites.<br><br>
         Siempre tuyo,<br>
         con todo mi corazón,<br>
-        Aus 💕✨️
+        Fausto 💕✨️
       </p>
     </div>
   </div>
@@ -204,42 +207,37 @@
     let gameOver = false;
     let heartInterval, flowerInterval;
     function showMessage(text, x, y) {
-      const msg = document.createElement('div');
-      msg.classList.add('message');
-      msg.textContent = text;
-      msg.style.left = x + 'px'; msg.style.top = y + 'px';
-      document.body.appendChild(msg);
+      const msg = document.createElement('div'); msg.classList.add('message'); msg.textContent = text;
+      msg.style.left = x+'px'; msg.style.top = y+'px'; document.body.appendChild(msg);
       msg.addEventListener('animationend', () => msg.remove());
     }
     function createFloat(emoji, container) {
       const el = document.createElement('div'); el.classList.add('float'); el.textContent = emoji;
-      const size = Math.random()*20+40; el.style.fontSize = size+'px'; el.style.left=Math.random()*100+'vw';
-      container.appendChild(el); return el;
+      const size = Math.random()*20+40; el.style.fontSize=size+'px'; el.style.left=Math.random()*100+'vw'; container.appendChild(el);
+      return el;
     }
     function createHeart() {
-      if(gameOver) return;
-      const emoji = heartEmojis[Math.floor(Math.random()*heartEmojis.length)];
+      if(gameOver) return; const emoji = heartEmojis[Math.floor(Math.random()*heartEmojis.length)];
       const heart = createFloat(emoji, heartContainer); heart.classList.add('heart');
-      heart.addEventListener('click',(e)=>{
-        if(gameOver||heart.classList.contains('pop'))return;
-        heart.classList.add('pop');
-        const phrase=phrases.splice(Math.floor(Math.random()*phrases.length),1)[0];
-        showMessage(phrase,e.clientX,e.clientY);
+      heart.addEventListener('click', (e) => {
+        if(gameOver||heart.classList.contains('pop')) return;
+        heart.classList.add('pop'); const phrase = phrases.splice(Math.floor(Math.random()*phrases.length),1)[0];
+        showMessage(phrase, e.clientX, e.clientY);
         clickedCount++; counterEl.textContent=`${clickedCount}/${maxClicks}`;
-        setTimeout(()=>heart.remove(),500);
-        if(clickedCount>=maxClicks)showFinal();
+        setTimeout(() => heart.remove(), 500);
+        if(clickedCount>=maxClicks) showFinal();
       });
-      setTimeout(()=>heart.remove(),6000);
+      setTimeout(() => heart.remove(), 6000);
     }
-    function showFinal(){
+    function showFinal() {
       gameOver=true; clearInterval(heartInterval);
       finalContainer.style.height='100vh'; letter.style.display='block';
-      flowerInterval=setInterval(()=>{
-        const fl=createFloat(flowerEmojis[Math.floor(Math.random()*flowerEmojis.length)],document.body);
-        setTimeout(()=>fl.remove(),8000);
-      },400);
+      flowerInterval = setInterval(() => {
+        const fl = createFloat(flowerEmojis[Math.floor(Math.random()*flowerEmojis.length)], document.body);
+        setTimeout(() => fl.remove(), 8000);
+      }, 400);
     }
-    heartInterval=setInterval(createHeart,800);
+    heartInterval = setInterval(createHeart, 800);
   </script>
 </body>
 </html>
